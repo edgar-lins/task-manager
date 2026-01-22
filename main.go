@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -17,7 +18,7 @@ type Task struct {
 
 func main() {
 	// Nosso "banco de dados" em memória
-	tasks := []Task{}
+	tasks := loadTasks()
 
 	// Preparando o leitor de input (Lê da entrada padrão do sistema - teclado)
 	reader := bufio.NewReader(os.Stdin)
@@ -79,6 +80,7 @@ func main() {
 			// Dica: Lembre-se de como fizemos no código anterior:
 			// novaTarefa := Task{...}
 			// tasks = append(tasks, novaTarefa)
+			saveTasks(tasks)
 
 			fmt.Println("Tarefa adicionada com sucesso!")
 
@@ -90,4 +92,26 @@ func main() {
 			fmt.Println("Opção inválida, tente novamente.")
 		}
 	}
+}
+
+// Função para guardar as tarefas no ficheiro "tasks.json"
+func saveTasks(tasks []Task) {
+	// MarshalIndent transforma a struct em texto JSON bonitinho (com identação)
+	data, _ := json.MarshalIndent(tasks, "", "  ")
+	// 0644 é a permissão de leitura/escrita do ficheiro
+	os.WriteFile("tasks.json", data, 0644)
+}
+
+// Função para carregar as tarefas quando o programa inicia
+func loadTasks() []Task {
+	// Tenta ler o ficheiro
+	data, err := os.ReadFile("tasks.json")
+	if err != nil {
+		// Se der erro (ex: ficheiro não existe), devolve lista vazia
+		return []Task{}
+	}
+	var loadedTasks []Task
+	// Unmarshal transforma o texto JSON de voltar em struct Go
+	json.Unmarshal(data, &loadedTasks)
+	return loadedTasks
 }
