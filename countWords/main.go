@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// Section 1
-	fileData, err := os.ReadFile("text.txt")
+	fileData, err := os.ReadFile("countWords/text.txt")
 	if err != nil {
 		log.Fatalf("failed reading file: %s", err)
 	}
